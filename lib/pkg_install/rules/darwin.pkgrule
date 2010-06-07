@@ -1,0 +1,57 @@
+if "Darwin".member?(Facter.collection[:operatingsystem])
+  require 'open-uri'
+  require 'pp'
+  require 'ftools'
+
+  def install(pkgname)
+    case pkgname
+      when "SDL","libsdl"
+        dmgInstall(downloadLinkLibSDL)
+      when /SDL_.*/
+        dmgInstall(downloadLinkFromLibSDLorg(pkgname))
+    end
+  end
+
+
+  def download(url)
+    open(url) {|f|
+      f.read
+    }
+  end	
+
+  def pickLinkHtml(html,urlRegex)
+    html.scan(/[Hh][Rr][Ee][Ff]=["'](#{urlRegex})["']/).flatten[0]
+  end
+
+  def downloadLinkFromLibSDLorg(lib)
+    url="http://www.libsdl.org/projects/#{lib}"
+    html=download(url)
+    link=pickLinkHtml(html,"[^\"]*#{lib}[^\"]*dmg")
+    url+"/"+link
+  end
+
+  def downloadLinkLibSDL
+    url="http://www.libsdl.org/download-1.2.php"
+    html=download(url)
+    link=pickLinkHtml(html,"[^\"]*SDL[^\"]*dmg")
+    "http://www.libsdl.org"+"/"+link
+  end
+
+  def save(filename,data)
+    File.open(filename,"wb"){|f|
+      f.print data
+    }
+  end
+
+  def dmgInstall(url)
+     save("dl.dmg",download(url))
+
+     path=`/usr/bin/hdid dl.dmg|tail`.split("\t")[-1].chomp.gsub(/ *[0-9]*$/,'')
+     pp path
+     `cp -PRf #{path}/*.framework /Library/Frameworks/`
+
+#     `/usr/bin/hdiutil unmount #{path}`
+  end
+
+
+end

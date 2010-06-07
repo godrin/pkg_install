@@ -1,0 +1,8 @@
+.autotest
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+bin/pkg_install
+lib/pkg_install.rb
+test/test_pkg_install.rb

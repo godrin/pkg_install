@@ -1,0 +1,27 @@
+if "Ubuntu".member?(Facter.collection[:operatingsystem])
+  def install(pkgname)
+    pkgs=PkgInstall::resolvePkgNames4(pkgname).join(" ")
+    puts "Install following packages: #{pkgs}"
+    system "apt-get -y install #{pkgs}"
+  end
+
+  PkgInstall::map_packages(
+
+    {
+     "libsdl"=>"libsdl1.2-dev",
+     "libsdl-console"=>"libsdl-console-dev",
+     "libsdl-gfx"=>"libsdl-gfx1.2-dev",
+     "libsdl-image"=>"libsdl-image1.2-dev",
+     "libsdl-mixer"=>"libsdl-mixer1.2-dev",
+     "libsdl-net"=>"libsdl-net1.2-dev",
+     "libsdl-ocaml"=>"libsdl-ocaml-dev",
+     "libsdl-pango"=>"libsdl-pango-dev",
+     "libsdl-sge"=>"libsdl-sge-dev",
+     "libsdl-sound"=>"libsdl-sound1.2-dev",
+     "libsdl-stretch"=>"libsdl-stretch-dev",
+     "libsdl-ttf2"=>"libsdl-ttf2.0-dev",
+     "libsdl-ttf"=>"libsdl-ttf2.0-dev"
+
+     }
+   )
+end
