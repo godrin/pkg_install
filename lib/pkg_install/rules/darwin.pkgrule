@@ -14,6 +14,7 @@ if "Darwin".member?(Facter.collection[:operatingsystem])
 
 
   def download(url)
+    puts "Downloading from #{url}"
     open(url) {|f|
       f.read
     }
@@ -50,7 +51,7 @@ if "Darwin".member?(Facter.collection[:operatingsystem])
      pp path
      `cp -PRf #{path}/*.framework /Library/Frameworks/`
 
-#     `/usr/bin/hdiutil unmount #{path}`
+     `/usr/bin/hdiutil unmount #{path}`
   end
 
 

@@ -33,6 +33,17 @@ find_gl_header('GL')
 
 create_makefile('Makefile')
 
-File.open("Makefile","a") {|f|
-  f.puts ".m.o:\n\t$(CC) $(INCFLAGS) $(CPPFLAGS) $(CFLAGS) -c $<"
-}
+makefile=File.open("Makefile"){|f|f.read}
+
+makefile=makefile.sub(/^(all:.*)$/,'\1 rsdl')
+makefile=makefile.sub(/^(OBJS.*)(SDLMain\..)(.*)$/,'\1 \3')
+makefile=makefile.sub(/^(SRCS.*)(SDLMain\..)(.*)$/,'\1 \3')
+ld=makefile.split("\n"){|l|l=~/^LDSHARED.*/}[0].sub("LDSHARED","LD").sub("-bundle","")
+makefile+="\n"+ld
+makefile+="\n.m.o:\n\t$(CC) $(INCFLAGS) $(CPPFLAGS) $(CFLAGS) -c $<"
+
+File.open("Makefile","w"){|f|f.puts makefile}
+
+##File.open("Makefile","a") {|f|
+#  f.puts ".m.o:\n\t$(CC) $(INCFLAGS) $(CPPFLAGS) $(CFLAGS) -c $<"
+#}
