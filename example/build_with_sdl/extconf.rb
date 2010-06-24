@@ -36,11 +36,17 @@ create_makefile('Makefile')
 makefile=File.open("Makefile"){|f|f.read}
 
 makefile=makefile.sub(/^(all:.*)$/,'\1 rsdl')
-makefile=makefile.sub(/^(OBJS.*)(SDLMain\..)(.*)$/,'\1 \3')
-makefile=makefile.sub(/^(SRCS.*)(SDLMain\..)(.*)$/,'\1 \3')
-ld=makefile.split("\n"){|l|l=~/^LDSHARED.*/}[0].sub("LDSHARED","LD").sub("-bundle","")
+["SDLMain","rubymain"].each{|f|
+  makefile=makefile.sub(/^(OBJS.*)(#{f}\..)(.*)$/,'\1 \3')
+  makefile=makefile.sub(/^(SRCS.*)(#{f}\..)(.*)$/,'\1 \3')
+}
+ld=makefile.split("\n").select{|l|l=~/^LDSHARED.*/}[0].sub("LDSHARED","LD").sub("-bundle","")
 makefile+="\n"+ld
 makefile+="\n.m.o:\n\t$(CC) $(INCFLAGS) $(CPPFLAGS) $(CFLAGS) -c $<"
+makefile+="\nrsdl: SDLMain.o rubymain.o Makefile
+\t@-$(RM) $@
+\t$(LD) -o $@ SDLMain.o rubymain.o $(LIBPATH) $(DLDFLAGS) $(LOCAL_LIBS) $(LIBS)
+"
 
 File.open("Makefile","w"){|f|f.puts makefile}
 
